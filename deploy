@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# vim: set ft=bash
+
+set -euo pipefail
+
+command -v netlify > /dev/null || (echo "Missing netlify cli executable" && exit 1)
+
+echo "Deploying..."
+
+NETLIFY_SITE_ID=${NETLIFY_SITE_ID:-}
+if [ -z "$NETLIFY_SITE_ID" ]
+then
+      echo "Please specify NETLIFY_SITE_ID"
+      exit 1
+fi
+
+NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN:-}
+if [ -z "$NETLIFY_AUTH_TOKEN" ]
+then
+      echo "Please specify NETLIFY_AUTH_TOKEN"
+      exit 1
+fi
+
+netlify --help
