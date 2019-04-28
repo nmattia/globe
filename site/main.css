@@ -1,0 +1,69 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,900|Space+Mono');
+
+:root {
+    --size-font: calc(.75rem + 1vw);
+    --size-max-width: 40rem;
+    --size-gutter: 1.5rem;
+
+    --color-base-h: 180;
+    --color-base-s: 40%;
+    --color-base-l: 60%;
+
+    --color-text: hsl(calc(var(--color-base-h) + 180), var(--color-base-s), 0%);
+    --color-highlight: hsl(var(--color-base-h), var(--color-base-s), var(--color-base-l));
+    --color-interaction: blue;
+    --color-contrast: #212121;
+    --color-text-inverted: #fff;
+
+    font-family: 'Roboto', sans-serif;
+    font-size: var(--size-font);
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+code, pre {
+    font-family: 'Space Mono', monospace;
+
+}
+
+pre {
+    background: var(--color-contrast);
+    padding: var(--size-gutter);
+    color: var(--color-text-inverted);
+    overflow: auto;
+}
+
+a {
+    color: var(--color-interaction);
+}
+
+.l-design-width {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--size-max-width);
+    padding-left: var(--size-gutter);
+    padding-right: var(--size-gutter);
+}
+
+.section {
+    padding: calc(var(--size-gutter) * 1.4) 0;
+}
+
+.section--intro {
+    --color-interaction: pink;
+    background: var(--color-highlight);
+}
+
+.title {
+    font-weight: 900;
+    margin: 0;
+}
+
+.title--page {
+    font-size: 4em;
+}
+
+p {
+    margin: var(--size-gutter) 0 0;
+}
