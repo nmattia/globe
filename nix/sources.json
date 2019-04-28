@@ -1,4 +1,16 @@
 {
+    "hub": {
+        "homepage": "https://hub.github.com/",
+        "url": "https://github.com/github/hub/archive/16ccde1a74ef89455ccacb7f42aded9677d54943.tar.gz",
+        "owner": "github",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "hub",
+        "type": "tarball",
+        "sha256": "1gai5lmd2nb2vaxrwbi1zq0q1nlvh0mja0av21cmwkma13if5xqd",
+        "description": "A command-line tool that makes git easier to use with GitHub.",
+        "rev": "16ccde1a74ef89455ccacb7f42aded9677d54943"
+    },
     "nixpkgs": {
         "url": "https://github.com/NixOS/nixpkgs-channels/archive/571b40d3f50466d3e91c1e609d372de96d782793.tar.gz",
         "owner": "NixOS",

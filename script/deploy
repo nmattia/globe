@@ -4,6 +4,7 @@
 #!nix-shell -p bash
 #!nix-shell -p git
 #!nix-shell -p netlify-cli
+#!nix-shell -p hub
 # vim: set ft=bash
 
-./deploy
+./deploy "$@"

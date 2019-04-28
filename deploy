@@ -3,7 +3,46 @@
 
 set -euo pipefail
 
-command -v netlify > /dev/null || (echo "Missing netlify cli executable" && exit 1)
+GLOBE_DEPLOY_DIR=""
+GLOBE_PROD="false"
+
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    --dir)
+    GLOBE_DEPLOY_DIR="$2"
+    shift
+    shift
+    ;;
+    --prod)
+    GLOBE_PROD="true"
+    shift
+    ;;
+    *)    # unknown option
+    # TODO: error out here
+    shift # past argument
+    ;;
+esac
+done
+
+# XXX: check GLOBE_DEPLOY_DIR
+if [ -z "$GLOBE_DEPLOY_DIR" ]
+then
+      echo "Please specify GLOBE_DEPLOY_DIR"
+      exit 1 # TODO: print help
+fi
+
+command -v netlify > /dev/null || \
+    (echo "Missing netlify cli executable" && exit 1)
+
+command -v hub > /dev/null || \
+    (echo "Missing hub executable" && exit 1)
+
+hub api --help
+
+exit 1
 
 echo "Deploying..."
 
@@ -11,14 +50,32 @@ NETLIFY_SITE_ID=${NETLIFY_SITE_ID:-}
 if [ -z "$NETLIFY_SITE_ID" ]
 then
       echo "Please specify NETLIFY_SITE_ID"
-      exit 1
+      exit 1 # TODO: print help
 fi
 
 NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN:-}
 if [ -z "$NETLIFY_AUTH_TOKEN" ]
 then
       echo "Please specify NETLIFY_AUTH_TOKEN"
-      exit 1
+      exit 1 # TODO: print help
 fi
 
-netlify --help
+# XXX: https://github.com/netlify/cli/issues/248
+sout=$(mktemp)
+serr=$(mktemp)
+
+netlify deploy \
+    --dir="$GLOBE_DEPLOY_DIR" \
+    --message="test deploy" > $sout 2> $serr
+
+# sed strips out the ANSI stuff
+# grep grabs the upload URL
+deployed_url=$(cat $sout | \
+    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
+    grep -ioP 'live draft url: \K.*' | \
+    tr -d '\n')
+
+echo "Website was deployed to $deployed_url"
+
+echo "Complete stdout output can be found in: $sout"
+echo "Complete stderr output can be found in: $serr"

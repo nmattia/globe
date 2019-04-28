@@ -1,0 +1,20 @@
+version: 2
+
+jobs:
+  deploy:
+    machine:
+        enabled: true
+    steps:
+      - run:
+          name: Log env vars
+          command: |
+            echo "Branch:" "$CIRCLE_BRANCH"
+            echo "Repo:" "$CIRCLE_REPOSITORY_URL"
+            echo "PR:" "$CIRCLE_PULL_REQUEST"
+            echo "PRS:" "$CIRCLE_PULL_REQUESTS"
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - deploy
