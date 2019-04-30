@@ -46,6 +46,18 @@
         "description": "Support for building npm packages in Nix and lightweight npm registry",
         "rev": "853a57f87b6fe55728e235a844c4276481050831"
     },
+    "github-deploy": {
+        "homepage": "",
+        "url": "https://github.com/zimbatm/github-deploy/archive/37f7b56aafcb3bf1b960b4728c67829aac8ea671.tar.gz",
+        "owner": "zimbatm",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "github-deploy",
+        "type": "tarball",
+        "sha256": "0x062zxi1jb555f24fcjwqnf74jaf2a5576wj0lnz00p0n18g58f",
+        "description": "Track deployments on GitHub PRs",
+        "rev": "37f7b56aafcb3bf1b960b4728c67829aac8ea671"
+    },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
         "url": "https://github.com/nmattia/niv/archive/a489b65a5c3a29983701069d1ce395b23d9bde64.tar.gz",

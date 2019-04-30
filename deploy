@@ -3,79 +3,104 @@
 
 set -euo pipefail
 
-GLOBE_DEPLOY_DIR=""
-GLOBE_PROD="false"
+# Some setup
 
-while [[ $# -gt 0 ]]
-do
-key="$1"
+function log() {
+    >&2 echo "$@"
+}
 
-case $key in
-    --dir)
-    GLOBE_DEPLOY_DIR="$2"
-    shift
-    shift
-    ;;
-    --prod)
-    GLOBE_PROD="true"
-    shift
-    ;;
-    *)    # unknown option
-    # TODO: error out here
-    shift # past argument
-    ;;
-esac
-done
+function show_help() {
+    log "USAGE:"
+    log "  deploy (DIR|--help)"
+    log "DIR: directory to deploy to netlify"
+}
 
-# XXX: check GLOBE_DEPLOY_DIR
-if [ -z "$GLOBE_DEPLOY_DIR" ]
+function need_exe() {
+    command -v $1 > /dev/null || \
+        (log "Missing command: $1: see $2" && exit 1)
+}
+
+function need_var() {
+    local arg=$1
+    local val=${!arg:-}
+    if [ -z "$val" ]
+    then
+          log "Please specify variable $1"
+          exit 1 # TODO: print help
+    fi
+}
+
+GLOBE_INNER=${GLOBE_INNER:-}
+
+# Some checks
+
+need_exe github-deploy "https://github.com/zimbatm/github-deploy"
+need_exe netlify "https://github.com/netlify/cli"
+need_exe sed "https://www.gnu.org/software/sed/"
+
+need_var GITHUB_AUTH_TOKEN
+need_var NETLIFY_AUTH_TOKEN
+need_var NETLIFY_SITE_ID
+
+# Main switch between "outer" and "inner" modes
+
+if [ -z "$GLOBE_INNER" ] # OUTER MODE
 then
-      echo "Please specify GLOBE_DEPLOY_DIR"
-      exit 1 # TODO: print help
+    if [[ $# -ne 1 ]]; then
+        show_help
+        exit 1
+    fi
+
+    key="$1"
+
+    case $key in
+        -h|--help)
+        show_help
+        exit 0
+        shift
+        ;;
+        *)
+        GLOBE_DIR="$1"
+        shift # past value
+        ;;
+    esac
+
+    if [ -z "$GLOBE_DIR" ]
+    then
+        log "Directory to deploy cannot be the empty string."
+        exit 1
+    fi
+
+    log "Starting deploy..."
+    GLOBE_INNER="yes" \
+        GLOBE_DIR=$GLOBE_DIR \
+        github-deploy please --deploy-script "${BASH_SOURCE[0]}"
+    log "Done deploying."
+
+else # INNER MODE
+
+    # Deploy proper
+
+    # XXX: https://github.com/netlify/cli/issues/248
+    sout=$(mktemp)
+    serr=$(mktemp)
+
+    netlify deploy \
+        --dir="$GLOBE_DIR" \
+        --message="test deploy" > $sout 2> $serr
+
+    # sed strips out the ANSI stuff
+    # grep grabs the upload URL
+    deployed_url=$(cat $sout | \
+        sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
+        grep -ioP 'live draft url: \K.*' | \
+        tr -d '\n')
+
+
+    log "Website was deployed to $deployed_url"
+
+    log "Complete stdout output can be found in: $sout"
+    log "Complete stderr output can be found in: $serr"
+
+    echo -n "$deployed_url"
 fi
-
-command -v netlify > /dev/null || \
-    (echo "Missing netlify cli executable" && exit 1)
-
-command -v hub > /dev/null || \
-    (echo "Missing hub executable" && exit 1)
-
-hub api --help
-
-exit 1
-
-echo "Deploying..."
-
-NETLIFY_SITE_ID=${NETLIFY_SITE_ID:-}
-if [ -z "$NETLIFY_SITE_ID" ]
-then
-      echo "Please specify NETLIFY_SITE_ID"
-      exit 1 # TODO: print help
-fi
-
-NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN:-}
-if [ -z "$NETLIFY_AUTH_TOKEN" ]
-then
-      echo "Please specify NETLIFY_AUTH_TOKEN"
-      exit 1 # TODO: print help
-fi
-
-# XXX: https://github.com/netlify/cli/issues/248
-sout=$(mktemp)
-serr=$(mktemp)
-
-netlify deploy \
-    --dir="$GLOBE_DEPLOY_DIR" \
-    --message="test deploy" > $sout 2> $serr
-
-# sed strips out the ANSI stuff
-# grep grabs the upload URL
-deployed_url=$(cat $sout | \
-    sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
-    grep -ioP 'live draft url: \K.*' | \
-    tr -d '\n')
-
-echo "Website was deployed to $deployed_url"
-
-echo "Complete stdout output can be found in: $sout"
-echo "Complete stderr output can be found in: $serr"
