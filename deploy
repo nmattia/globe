@@ -39,6 +39,8 @@ then
     GLOBE_IS_PR=""
 fi
 
+# TODO: there's an issue, it's impossible to "unset" production mode if the
+# branch is master
 GLOBE_IS_PROD=${GLOBE_IS_PROD:-}
 if [ -z "$GLOBE_IS_PROD" ] && [ "$GLOBE_BRANCH" == "master" ]
 then
