@@ -16,6 +16,7 @@ jobs:
 
             # Enable sandbox
             echo "build-use-sandbox = true" | sudo tee -a /etc/nix/nix.conf
+            echo "max-jobs = 50" | sudo tee -a /etc/nix/nix.conf
 
       - checkout
 
