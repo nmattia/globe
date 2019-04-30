@@ -6,12 +6,23 @@ jobs:
         enabled: true
     steps:
       - run:
-          name: Log env vars
+          name: Install Nix
           command: |
-            echo "Branch:" "$CIRCLE_BRANCH"
-            echo "Repo:" "$CIRCLE_REPOSITORY_URL"
-            echo "PR:" "$CIRCLE_PULL_REQUEST"
-            echo "PRS:" "$CIRCLE_PULL_REQUESTS"
+            sudo mkdir -p /nix
+            sudo chown circleci /nix
+            bash <(curl https://nixos.org/nix/install)
+            echo '. /home/circleci/.nix-profile/etc/profile.d/nix.sh' >> $BASH_ENV
+            sudo mkdir -p /etc/nix
+
+            # Enable sandbox
+            echo "build-use-sandbox = true" | sudo tee -a /etc/nix/nix.conf
+
+      - checkout
+
+      - run:
+          name: Deploy
+          command: |
+            ./script/deploy ./site
 
 workflows:
   version: 2
