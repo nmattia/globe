@@ -36,15 +36,15 @@
     },
     "napalm": {
         "homepage": "",
-        "url": "https://github.com/nmattia/napalm/archive/853a57f87b6fe55728e235a844c4276481050831.tar.gz",
+        "url": "https://github.com/nmattia/napalm/archive/72dd0eb4df4ad2d527f5088ddcaa502f4ea4acce.tar.gz",
         "owner": "nmattia",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "napalm",
         "type": "tarball",
-        "sha256": "06sbyp3jbd53p8hg5ibpfchgi00b6g6sqch687hwcyg0i9db9kg0",
+        "sha256": "1933w5lgx2jrfs1gc0c8mk5pp2a27m5s1aqhwj05nbf06d0qqlqb",
         "description": "Support for building npm packages in Nix and lightweight npm registry",
-        "rev": "853a57f87b6fe55728e235a844c4276481050831"
+        "rev": "72dd0eb4df4ad2d527f5088ddcaa502f4ea4acce"
     },
     "github-deploy": {
         "homepage": "",

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=bash
 
+# TODO: support for --prod
+
 set -euo pipefail
 
 # Some setup
