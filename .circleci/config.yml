@@ -1,0 +1,32 @@
+version: 2
+
+jobs:
+  deploy:
+    machine:
+        enabled: true
+    steps:
+      - run:
+          name: Install Nix
+          command: |
+            sudo mkdir -p /nix
+            sudo chown circleci /nix
+            bash <(curl https://nixos.org/nix/install)
+            echo '. /home/circleci/.nix-profile/etc/profile.d/nix.sh' >> $BASH_ENV
+            sudo mkdir -p /etc/nix
+
+            # Enable sandbox
+            echo "build-use-sandbox = true" | sudo tee -a /etc/nix/nix.conf
+            echo "max-jobs = 50" | sudo tee -a /etc/nix/nix.conf
+
+      - checkout
+
+      - run:
+          name: Deploy
+          command: |
+            ./script/deploy ./site
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - deploy
