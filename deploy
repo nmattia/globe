@@ -71,11 +71,11 @@ then # INNER MODE
     then
         netlify deploy \
             --dir="$GLOBE_DIR" \
+            --prod \
             --message="test deploy" > $sout 2> $serr
     else
         netlify deploy \
             --dir="$GLOBE_DIR" \
-            --prod \
             --message="test deploy" > $sout 2> $serr
     fi
 
