@@ -45,6 +45,8 @@ GLOBE_IS_PROD=${GLOBE_IS_PROD:-}
 if [ -z "$GLOBE_IS_PROD" ] && [ "$GLOBE_BRANCH" == "master" ]
 then
     GLOBE_IS_PROD="yes"
+else
+    GLOBE_IS_PROD="no"
 fi
 
 # Some checks
@@ -70,7 +72,7 @@ then # INNER MODE
     sout=$(mktemp)
     serr=$(mktemp)
 
-    if [ -n "$GLOBE_IS_PROD" ]
+    if [ "$GLOBE_IS_PROD" == "yes" ]
     then
         netlify deploy \
             --dir="$GLOBE_DIR" \
