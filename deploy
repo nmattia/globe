@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # vim: set ft=bash
 
-# TODO: support for --prod
-
 set -euo pipefail
 
 # Some setup
@@ -27,12 +25,25 @@ function need_var() {
     local val=${!arg:-}
     if [ -z "$val" ]
     then
-          log "Please specify variable $1"
+          log "Please specify variable $1: $2"
           exit 1 # TODO: print help
     fi
 }
 
 GLOBE_INNER=${GLOBE_INNER:-}
+GLOBE_BRANCH=${GLOBE_BRANCH:-${CIRCLE_BRANCH:-${TRAVIS_BRANCH:-}}}
+
+GLOBE_IS_PR=${GLOBE_IS_PR:-${TRAVIS_PULL_REQUEST:-${CIRCLE_PULL_REQUEST:-}}}
+if [ "$GLOBE_IS_PR" == "false" ] # Travis is set to "false"
+then
+    GLOBE_IS_PR=""
+fi
+
+GLOBE_IS_PROD=${GLOBE_IS_PROD:-}
+if [ -z "$GLOBE_IS_PROD" ] && [ "$GLOBE_BRANCH" == "master" ]
+then
+    GLOBE_IS_PROD="yes"
+fi
 
 # Some checks
 
@@ -40,14 +51,49 @@ need_exe github-deploy "https://github.com/zimbatm/github-deploy"
 need_exe netlify "https://github.com/netlify/cli"
 need_exe sed "https://www.gnu.org/software/sed/"
 
-need_var GITHUB_AUTH_TOKEN
-need_var NETLIFY_AUTH_TOKEN
-need_var NETLIFY_SITE_ID
+need_var GITHUB_AUTH_TOKEN "https://github.com/settings/tokens"
+need_var GLOBE_BRANCH "Couldn't infer from CIRCLE_BRANCH or TRAVIS_BRANCH"
+need_var NETLIFY_AUTH_TOKEN "https://www.netlify.com/docs/cli/#authentication"
+need_var NETLIFY_SITE_ID "https://www.netlify.com/docs/cli/#linking-and-unlinking-sites"
 
 # Main switch between "outer" and "inner" modes
 
-if [ -z "$GLOBE_INNER" ] # OUTER MODE
-then
+if [ -n "$GLOBE_INNER" ]
+then # INNER MODE
+
+    # Deploy proper
+
+    # XXX: https://github.com/netlify/cli/issues/248
+    sout=$(mktemp)
+    serr=$(mktemp)
+
+    if [ -n "$GLOBE_IS_PROD" ]
+    then
+        netlify deploy \
+            --dir="$GLOBE_DIR" \
+            --message="test deploy" > $sout 2> $serr
+    else
+        netlify deploy \
+            --dir="$GLOBE_DIR" \
+            --prod \
+            --message="test deploy" > $sout 2> $serr
+    fi
+
+    # sed strips out the ANSI stuff
+    # grep grabs the upload URL
+    deployed_url=$(cat $sout | \
+        sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
+        grep -ioP 'live draft url: \K.*' | \
+        tr -d '\n')
+
+
+    log "Website was deployed to $deployed_url"
+
+    log "Complete stdout output can be found in: $sout"
+    log "Complete stderr output can be found in: $serr"
+
+    echo -n "$deployed_url"
+else # OUTER MODE
     if [[ $# -ne 1 ]]; then
         show_help
         exit 1
@@ -74,35 +120,16 @@ then
     fi
 
     log "Starting deploy..."
-    GLOBE_INNER="yes" \
-        GLOBE_DIR=$GLOBE_DIR \
-        github-deploy please --deploy-script "${BASH_SOURCE[0]}"
+    if [ -n "$GLOBE_IS_PR" ]
+    then # PR MODE
+        GLOBE_INNER="yes" \
+            GLOBE_DIR=$GLOBE_DIR \
+            github-deploy please --deploy-script "${BASH_SOURCE[0]}"
+    else
+        GLOBE_INNER="yes" \
+            GLOBE_DIR=$GLOBE_DIR \
+            GLOBE_IS_PROD=$GLOBE_IS_PROD \
+            "${BASH_SOURCE[0]}"
+    fi
     log "Done deploying."
-
-else # INNER MODE
-
-    # Deploy proper
-
-    # XXX: https://github.com/netlify/cli/issues/248
-    sout=$(mktemp)
-    serr=$(mktemp)
-
-    netlify deploy \
-        --dir="$GLOBE_DIR" \
-        --message="test deploy" > $sout 2> $serr
-
-    # sed strips out the ANSI stuff
-    # grep grabs the upload URL
-    deployed_url=$(cat $sout | \
-        sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
-        grep -ioP 'live draft url: \K.*' | \
-        tr -d '\n')
-
-
-    log "Website was deployed to $deployed_url"
-
-    log "Complete stdout output can be found in: $sout"
-    log "Complete stderr output can be found in: $serr"
-
-    echo -n "$deployed_url"
 fi
