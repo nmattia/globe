@@ -119,13 +119,14 @@ else # OUTER MODE
         exit 1
     fi
 
-    log "Starting deploy..."
     if [ -n "$GLOBE_IS_PR" ]
     then # PR MODE
+        log "Starting PR deploy..."
         GLOBE_INNER="yes" \
             GLOBE_DIR=$GLOBE_DIR \
             github-deploy please --deploy-script "${BASH_SOURCE[0]}"
     else
+        log "Starting direct deploy..."
         GLOBE_INNER="yes" \
             GLOBE_DIR=$GLOBE_DIR \
             GLOBE_IS_PROD=$GLOBE_IS_PROD \
