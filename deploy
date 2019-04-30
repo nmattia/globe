@@ -53,6 +53,7 @@ need_exe sed "https://www.gnu.org/software/sed/"
 
 need_var GITHUB_AUTH_TOKEN "https://github.com/settings/tokens"
 need_var GLOBE_BRANCH "Couldn't infer from CIRCLE_BRANCH or TRAVIS_BRANCH"
+need_var GLOBE_IS_PROD "Couldn't infer whether to --prod from GLOBE_BRANCH $GLOBE_BRANCH"
 need_var NETLIFY_AUTH_TOKEN "https://www.netlify.com/docs/cli/#authentication"
 need_var NETLIFY_SITE_ID "https://www.netlify.com/docs/cli/#linking-and-unlinking-sites"
 
@@ -129,7 +130,6 @@ else # OUTER MODE
         log "Starting direct deploy..."
         GLOBE_INNER="yes" \
             GLOBE_DIR=$GLOBE_DIR \
-            GLOBE_IS_PROD=$GLOBE_IS_PROD \
             "${BASH_SOURCE[0]}"
     fi
     log "Done deploying."
