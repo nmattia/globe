@@ -26,18 +26,13 @@ function need_var() {
     if [ -z "$val" ]
     then
           log "Please specify variable $1: $2"
-          exit 1 # TODO: print help
+          show_help
+          exit 1
     fi
 }
 
 GLOBE_INNER=${GLOBE_INNER:-}
 GLOBE_BRANCH=${GLOBE_BRANCH:-${CIRCLE_BRANCH:-${TRAVIS_BRANCH:-}}}
-
-GLOBE_IS_PR=${GLOBE_IS_PR:-${TRAVIS_PULL_REQUEST:-${CIRCLE_PULL_REQUEST:-}}}
-if [ "$GLOBE_IS_PR" == "false" ] # Travis is set to "false"
-then
-    GLOBE_IS_PR=""
-fi
 
 # TODO: there's an issue, it's impossible to "unset" production mode if the
 # branch is master
@@ -123,17 +118,9 @@ else # OUTER MODE
         exit 1
     fi
 
-    if [ -n "$GLOBE_IS_PR" ]
-    then # PR MODE
-        log "Starting PR deploy..."
-        GLOBE_INNER="yes" \
-            GLOBE_DIR=$GLOBE_DIR \
-            github-deploy please --deploy-script "${BASH_SOURCE[0]}"
-    else
-        log "Starting direct deploy..."
-        GLOBE_INNER="yes" \
-            GLOBE_DIR=$GLOBE_DIR \
-            "${BASH_SOURCE[0]}"
-    fi
+    log "Starting deploy..."
+    GLOBE_INNER="yes" \
+        GLOBE_DIR=$GLOBE_DIR \
+        github-deploy please --deploy-script "${BASH_SOURCE[0]}"
     log "Done deploying."
 fi
