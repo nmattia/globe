@@ -99,7 +99,7 @@ then # INNER MODE
     log "Complete stdout output can be found in: $sout"
     log "Complete stderr output can be found in: $serr"
 
-    echo -n "$deployed_url"
+    echo -n "${deployed_url//[[:blank:]]/}"
 else # OUTER MODE
     if [[ $# -ne 1 ]]; then
         show_help
