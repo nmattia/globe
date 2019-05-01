@@ -88,7 +88,7 @@ then # INNER MODE
     # grep grabs the upload URL
     deployed_url=$(cat $sout | \
         sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | \
-        grep -ioP 'live \(draft \)\?url: \K.*' | \
+        grep -ioP 'live (draft )?url: \K.*' | \
         tr -d '\n')
 
 
