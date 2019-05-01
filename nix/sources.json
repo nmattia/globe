@@ -48,15 +48,15 @@
     },
     "github-deploy": {
         "homepage": "",
-        "url": "https://github.com/zimbatm/github-deploy/archive/d4a5c3c97e616f7184d8ada3c16d670e1f873623.tar.gz",
-        "owner": "zimbatm",
-        "branch": "master",
+        "url": "https://github.com/nmattia/github-deploy/archive/d4b565e2ce249598c370472f4a573bf4bea41452.tar.gz",
+        "owner": "nmattia",
+        "branch": "nm-branch-ref",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "github-deploy",
         "type": "tarball",
-        "sha256": "0nlmv4m6qg2i0nqns2ciabw4qqj1qwz5w3vm1w0lc14x15wz1wza",
+        "sha256": "08xym6zphcnhkv5kim0xj6p64b22cf9filggzx9qg8jvlsdxjr42",
         "description": "Track deployments on GitHub PRs",
-        "rev": "d4a5c3c97e616f7184d8ada3c16d670e1f873623"
+        "rev": "d4b565e2ce249598c370472f4a573bf4bea41452"
     },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
