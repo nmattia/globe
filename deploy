@@ -44,6 +44,13 @@ else
     GLOBE_IS_PROD="no"
 fi
 
+if [ "$GLOBE_IS_PROD" == "yes" ]
+then
+    GLOBE_ENVIRONMENT=${GLOBE_ENVIRONMENT:-production}
+else
+    GLOBE_ENVIRONMENT=${GLOBE_ENVIRONMENT:-preview}
+fi
+
 # Some checks
 
 need_exe github-deploy "https://github.com/zimbatm/github-deploy"
@@ -53,6 +60,7 @@ need_exe sed "https://www.gnu.org/software/sed/"
 need_var GITHUB_AUTH_TOKEN "https://github.com/settings/tokens"
 need_var GLOBE_BRANCH "Couldn't infer from CIRCLE_BRANCH or TRAVIS_BRANCH"
 need_var GLOBE_IS_PROD "Couldn't infer whether to --prod from GLOBE_BRANCH $GLOBE_BRANCH"
+need_var GLOBE_ENVIRONMENT "Couldn't infer environment from GLOBE_IS_PROD $GLOBE_IS_PROD"
 need_var NETLIFY_AUTH_TOKEN "https://www.netlify.com/docs/cli/#authentication"
 need_var NETLIFY_SITE_ID "https://www.netlify.com/docs/cli/#linking-and-unlinking-sites"
 
@@ -119,8 +127,15 @@ else # OUTER MODE
     fi
 
     log "Starting deploy..."
+
+    log "GLOBE_IS_PROD: $GLOBE_IS_PROD"
+    log "GLOBE_ENVIRONMENT: $GLOBE_ENVIRONMENT"
+    log "GLOBE_BRANCH: $GLOBE_BRANCH"
+
     GLOBE_INNER="yes" \
         GLOBE_DIR=$GLOBE_DIR \
-        github-deploy please --deploy-script "${BASH_SOURCE[0]}"
+        github-deploy please \
+            --deploy-script "${BASH_SOURCE[0]}" \
+            --environment "$GLOBE_ENVIRONMENT"
     log "Done deploying."
 fi
