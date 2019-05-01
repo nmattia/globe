@@ -48,8 +48,8 @@
     },
     "github-deploy": {
         "homepage": "",
-        "url": "https://github.com/zimbatm/github-deploy/archive/d4a5c3c97e616f7184d8ada3c16d670e1f873623.tar.gz",
-        "owner": "zimbatm",
+        "url": "https://github.com/nmattia/github-deploy/archive/d4a5c3c97e616f7184d8ada3c16d670e1f873623.tar.gz",
+        "owner": "nmattia",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "github-deploy",
