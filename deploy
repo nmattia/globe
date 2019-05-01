@@ -91,7 +91,6 @@ then # INNER MODE
         grep -ioP 'live (draft )?url: \K.*' | \
         tr -d '\n')
 
-
     log "Website was deployed to $deployed_url"
 
     log "Complete stdout output can be found in: $sout"
