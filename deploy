@@ -94,12 +94,13 @@ then # INNER MODE
         grep -ioP 'live (draft )?url: \K.*' | \
         tr -d '\n')
 
+    deployed_url="${deployed_url//[[:blank:]]/}"
     log "Website was deployed to $deployed_url"
 
     log "Complete stdout output can be found in: $sout"
     log "Complete stderr output can be found in: $serr"
 
-    echo -n "${deployed_url//[[:blank:]]/}"
+    echo -n "$deployed_url"
 else # OUTER MODE
     if [[ $# -ne 1 ]]; then
         show_help
